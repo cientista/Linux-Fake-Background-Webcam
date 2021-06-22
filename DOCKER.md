@@ -1,33 +1,29 @@
 # Linux-Fake-Background-Webcam with Docker
 
-## Prerequisite
+## Setup
 
-You need to have *docker* and *docker-compose* available.
+copy `docker_defaults.env` to a file named `.env` in same directory e.g.
+```shell script
+cp docker_defaults.env .env
+```
 
-## Configuration 
+Get list of your video devices. An app like `v4l2-ctl` should help:
+```shell script
+v4l2-ctl --list-devices
+```
 
-You should create a copy of `docker-compose.yml` and change to meet your needs:
+Make any changes you need (use nvidia gpu, update images, change video volume mapping) to the newly created `.env` file.
 
-- add a customer background image using a volume mapping:
-  ```
-      fakecam:
-          # ...
-          volumes:
-            - /path/to/background.jpg:/src/background.jpg:ro
-          # ...
-  ```
+## Prerequisites
 
-- change the device mappings if you are using diffent devices:
-  ```
-      fakecam:
-          # ...
-          devices:
-              # input (webcam)
-              - /dev/video0:/dev/video0
-              # output (virtual webcam)
-              - /dev/video1:/dev/video2
-          # ...
-  ```
-## Usage
- - Run and initial build containers: ``docker-compose up`` (or ``docker-compose up -d``)
- - Stop and remove containers: ``docker-compose down``
+* v4l2loopback
+* Docker
+* docker-compose
+
+
+### Usage
+
+ - Start it up: `docker-compose up --build` (or `docker-compose up -d --build`)
+ - Stop and remove containers: `docker-compose down`
+ - Note: *Ctrl-C* is currently stops the containers instead of changing images
+    - You can instead rebuild with new settings: `docker-compose up -d --build`

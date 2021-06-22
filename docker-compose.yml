@@ -1,26 +1,18 @@
-version: '3'
+version: '3.7'
 services:
-    bodypix:
-        image: bodypix
-        build:
-            context: ./bodypix
-        network_mode: host
-        read_only: true
 
     fakecam:
         image: fakecam
+        init: true
         build:
-            context: ./fakecam
-        network_mode: host
+            context: ./
         read_only: true
-        # volumes:
-        #   - /path/to/background.jpg:/src/background.jpg:ro
-        #   - /path/to/foreground.jpg:/src/foreground.jpg:ro
-        #   - /path/to/foreground-mask.png:/src/foreground-mask.png:ro
+        volumes:
+            - ${IMAGE_BACKGROUND}:/src/background-custom:ro
+            - ${IMAGE_FOREGROUND}:/src/foreground-custom:ro
+            - ${IMAGE_FOREGROUND_MASK}:/src/foreground-mask-custom:ro
         devices:
-            # input (webcam)
-            - /dev/video0:/dev/video0
-            # output (virtual webcam)
-            - /dev/video2:/dev/video2
-        depends_on:
-            - bodypix
+            - ${VIDEO_INPUT}:/dev/video0
+            - ${VIDEO_OUTPUT}:/dev/video2
+        command: ["-b", "background-custom", "-f", "foreground-custom" , "-m", "foreground-mask-custom",
+                  "--webcam-path", "/dev/video0", "--v4l2loopback-path", "/dev/video2"]
